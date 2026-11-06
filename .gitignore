@@ -43,3 +43,13 @@ yarn-error.log*
 .venv
 .arch
 __pycache__
+
+# Logent Gradle 플러그인 빌드
+.gradle/
+.kotlin/
+local.properties
+.idea/
+*.iml
+captures/
+*.apk
+*.aab

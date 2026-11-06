@@ -1,432 +1,89 @@
-<p align="center">
-  <picture>
-    <source srcset="apps/web/public/logo-fullmark.svg" media="(prefers-color-scheme: dark)">
-    <source srcset="apps/web/public/logo-light-fullmark.svg" media="(prefers-color-scheme: light)">
-    <img src="apps/web/public/logo-fullmark.svg" alt="Supermemory" width="400" />
-  </picture>
-</p>
+# supermemory-logent
 
-<p align="center">
-  <strong>State-of-the-art memory and context engine for AI.</strong>
-</p>
+[supermemoryai/supermemory](https://github.com/supermemoryai/supermemory)를 실제로 포크해
+Logent의 `memory` 장기 기억 도구를 `.lpg` 플러그인으로 묶은 저장소예요. 원본 저장소의
+앱·패키지·이력은 그대로 두고, Logent에 필요한 Kotlin 플러그인만 `logent` 브랜치에 얹어요.
 
-<p align="center">
-  <a href="https://supermemory.ai/docs">Docs</a> ·
-  <a href="https://supermemory.ai/docs/quickstart">Quickstart</a> ·
-  <a href="https://supermemory.ai/docs/self-hosting/overview">Self-host</a> ·
-  <a href="https://console.supermemory.ai">Dashboard</a> ·
-  <a href="https://supermemory.link/discord">Discord</a>
-</p>
+- 원본: `supermemoryai/supermemory` main `16ed414e0e0c61c946b7687ec813b2064fe75dd4`
+  (`server-v0.0.9` 이후 스냅샷, MIT)
+- 포크: `logentworld/supermemory-logent` (부모: `supermemoryai/supermemory`)
+- 원본 README 원문: [`README.upstream.md`](README.upstream.md)
+- Logent 변경 내역: [`NOTICE`](NOTICE)
+- 플러그인 id: `dev.logent.supermemory`, 도구 이름: `memory`
 
-<p align="center">
-  <a href="https://www.npmjs.com/package/supermemory"><img src="https://img.shields.io/npm/v/supermemory?style=flat-square&color=blue" alt="npm" /></a>
-  <a href="https://pypi.org/project/supermemory/"><img src="https://img.shields.io/pypi/v/supermemory?style=flat-square&color=blue" alt="pypi" /></a>
-  <a href="https://supermemory.ai/docs"><img src="https://img.shields.io/badge/docs-supermemory.ai-blue?style=flat-square" alt="docs" /></a>
-</p>
+## 무엇을 하나요
 
-<p align="center">
-  <strong>English</strong> · <a href="README.zh-CN.md">简体中文</a>
-</p>
+Supermemory v5 REST로 장기 기억을 저장·회상하고, 네임스페이스 프로필을 읽고, id로 정확히
+삭제해요. 코어 앱에서 쓰던 동작·응답 정규화·크기·시간 한도·오류 문구를 그대로 옮겼고,
+네트워크는 [`PluginHost.http`](https://github.com/logentworld/plugin)만 사용해요. 호스트가
+HTTPS·공용 주소·리다이렉트·시간·응답 크기를 검사해요.
 
-<p align="center">
-  <strong>#1 on every major AI memory benchmark — <a href="https://github.com/xiaowu0162/LongMemEval">LongMemEval</a>, <a href="https://github.com/snap-research/locomo">LoCoMo</a>, and <a href="https://github.com/Salesforce/ConvoMem">ConvoMem</a>.</strong><br/>
-  <strong>95% Recall@15 with a 99.4% context reduction · ~50ms user profiles.</strong><br/>
-  <a href="https://supermemory.ai/research">Read the research →</a>
-</p>
+| action | 요청 | 하는 일 |
+|---|---|---|
+| `save` | `POST /ns/{ns}/document` | `content`를 `dreaming=instant`로 저장해요. |
+| `recall` | `POST /ns/{ns}/search` | `searchMode=hybrid`로 관련 기억·문서 조각을 찾아요. |
+| `context` | `GET/POST /ns/{ns}/profile`, 예비 `POST /v4/profile` | 네임스페이스 프로필을 정리해요. |
+| `forget` | `DELETE /ns/{ns}/memories` | `ids`에 적은 기억만 정확히 삭제해요. |
 
----
+`forget`은 의미 기반 일괄 삭제를 지원하지 않아요. 먼저 `recall`로 id를 확인해 주세요.
+기억 본문과 오류 응답은 `<untrusted_web>` 경계 안에서 데이터로만 보여 줘요.
 
-Supermemory is the memory and context layer for AI. **#1 on [LongMemEval](https://github.com/xiaowu0162/LongMemEval), [LoCoMo](https://github.com/snap-research/locomo), and [ConvoMem](https://github.com/Salesforce/ConvoMem)** — the three major benchmarks for AI memory. 
+## 설정
 
-We are a research lab building the engine, plugins and tools around it.
+| 키 | 종류 | 기본값 | 설명 |
+|---|---|---|---|
+| `api-key` | `SECRET` | 없음 | `console.supermemory.ai` API 키예요. 비밀로 저장하고 로그·프롬프트·도구 결과에 넣지 않아요. |
+| `namespace` | `TEXT` | `logent` | 기억을 나눌 이름이에요. 영문·숫자·`_`·`-`·`:` 만 쓸 수 있어요. |
 
-Your AI forgets everything between conversations. Supermemory fixes that.
+키가 없으면 요청을 보내지 않고 설정을 안내하는 오류를 돌려줘요. 키를 바꾸면 다음 호출부터
+바로 반영돼요.
 
-It automatically learns from conversations, extracts facts, builds user profiles, handles knowledge updates and contradictions, forgets expired information, and delivers the right context at the right time. Full RAG, connectors, file processing — the entire context stack, one system.
-
-| | |
-|---|---|
-| 🧠 **Memory** | Extracts facts from conversations. Handles temporal changes, contradictions, and automatic forgetting. |
-| 👤 **User Profiles** | Auto-maintained user context — stable facts + recent activity. One call, ~50ms. |
-| 🔍 **Hybrid Search** | RAG + Memory in a single query. Knowledge base docs and personalized context together. |
-| 🔌 **Connectors** | Google Drive · Gmail · Notion · OneDrive · GitHub — auto-sync with real-time webhooks. |
-| 📄 **Multi-modal Extractors** | PDFs, images (OCR), videos (transcription), code (AST-aware chunking). Upload and it works. |
-
-All of this is in our single memory structure and ontology. 
-
-<img width="1414" height="937" alt="image" src="https://github.com/user-attachments/assets/8863b6d9-c043-4c75-b200-4f1759e7edaf" />
-
-
----
-
-## Use Supermemory
-
-<table>
-<tr>
-<td width="50%" valign="top">
-
-<h3>🧑‍💻 I use AI tools</h3>
-
-Give Claude Code, Muse Code, Cursor, Codex and OpenCode **persistent memory across every conversation** with a plugin or the MCP server.
-
-Your AI remembers your preferences, projects, past discussions — and gets smarter over time.
-
-**[→ Jump to User setup](#give-your-ai-memory)**
-
-</td>
-<td width="50%" valign="top">
-
-<h3>🔧 I'm building AI products</h3>
-
-Add memory, RAG, user profiles, and connectors to your agents and apps with **a single API**.
-
-No vector DB config. No embedding pipelines. No chunking strategies.
-
-**[→ Jump to developer quickstart](#build-with-supermemory-api)**
-
-</td>
-</tr>
-<tr>
-<td colspan="2" valign="top">
-
-<h3>🖥️ I want to run it myself</h3>
-
-State-of-the-art memory, on your machine. **One binary. Zero config.** Bring any model — or run fully offline with Ollama.
-
-```bash
-curl -fsSL https://supermemory.ai/install | bash
-```
-
-**[→ Jump to Supermemory local](#supermemory-local--run-it-yourself)**
-
-</td>
-</tr>
-</table>
-
----
-
-## Give your AI memory
-
-Plugins and the MCP server give any compatible AI assistant persistent memory. One install, and your AI remembers you.
-
-### Supermemory Plugins
-
-Supermemory comes built with plugins for Claude Code, Muse Code, Cursor, Codex, OpenCode, OpenClaw, and Hermes.
-
-<img width="844" height="484" alt="image" src="https://github.com/user-attachments/assets/ecb879a2-8652-495d-9228-f305a97ba603" />
-
-These plugins are implementations of the supermemory API, and they are open source! 
-
-You can find them here: 
-
-- Claude Code plugin: https://github.com/supermemoryai/claude-supermemory
-- Muse Code plugin: https://github.com/supermemoryai/muse-supermemory
-- Cursor plugin: https://github.com/supermemoryai/cursor-supermemory
-- Codex plugin: https://github.com/supermemoryai/codex-supermemory
-- OpenClaw plugin: https://github.com/supermemoryai/openclaw-supermemory
-- OpenCode plugin: https://github.com/supermemoryai/opencode-supermemory
-- Hermes agent (Supermemory memory provider): https://github.com/NousResearch/hermes-agent
-
-### MCP
-
-Server URL:
+## 구조
 
 ```text
-https://mcp.supermemory.ai/mcp
+apps/, packages/, skills/   upstream 원본 (수정하지 않아요)
+plugin/                     Logent Kotlin 플러그인 (:plugin)
+  src/main/kotlin/dev/logent/supermemory/
+    SupermemoryPlugin.kt    LogentPlugin 구현, 설정·프롬프트
+    SupermemoryTool.kt      memory action 디스패치
+    SupermemorySpec.kt      모델 도구 스키마
+    SupermemoryClient.kt    v5 REST 요청·응답 정규화
+  src/test/kotlin/dev/logent/supermemory/
+scripts/                    Gradle 래퍼 실행, 테스트, .lpg 패키징·서명
 ```
 
-```json
-{
-  "mcpServers": {
-    "supermemory": {
-      "url": "https://mcp.supermemory.ai/mcp"
-    }
-  }
-}
-```
+`plugin/`은 코어 앱을 import하지 않고 `dev.logent:logent-plugin-api:3.3.0` 계약만 구현해요.
+API artifact와 소스 커밋은 [`plugin-api.lock`](plugin-api.lock)에 함께 고정해요.
+upstream의 설치 스크립트와 Claude 마켓플레이스 파일은 `.lpg`에 넣지 않아요.
 
-Read more about our MCP here - https://supermemory.ai/docs/supermemory-mcp/mcp
+## 검증과 빌드
 
-### What your AI gets
-
-| Tool | What it does |
-|---|---|
-| `memory` | Save or forget information. Your AI calls this automatically when you share something worth remembering. |
-| `recall` | Search memories by query. Returns relevant memories + your user profile summary. |
-| `context` | Injects your full profile (preferences, recent activity) into the conversation at start. In Cursor and Claude Code, just type `/context`. |
-
-### How it works
-
-Once installed, Supermemory runs in the background:
-
-1. **You talk to your AI normally.** Share preferences, mention projects, discuss problems.
-2. **Supermemory extracts and stores the important stuff.** Facts, preferences, project context — not noise.
-3. **Next conversation, your AI already knows you.** It recalls what you're working on, how you like things, what you discussed before.
-
-Memory is scoped with **projects** (container tags) so you can separate work and personal context, or organize by client, repo, or anything else.
-
-### Supported clients
-
-**Claude Desktop** · **Cursor** · **Windsurf** · **VS Code** · **Claude Code** · **OpenCode** · **OpenClaw** · **Hermes**
-
-The MCP server is open source — [view the source](https://supermemory.ai/docs/supermemory-mcp/mcp).
-
-### Manual configuration
-
-Add this to your MCP client config:
-
-```json
-{
-  "mcpServers": {
-    "supermemory": {
-      "url": "https://mcp.supermemory.ai/mcp"
-    }
-  }
-}
-```
-
----
-
-## Build with Supermemory (API)
-
-If you're building AI agents or apps, Supermemory gives you the entire context stack through one API — memory, RAG, user profiles, connectors, and file processing.
-
-### Install
+Android SDK 37, JDK 21, Python 3.11 이상이 필요해요. API artifact는 GitHub Packages에서
+받으므로 읽기 권한이 있는 `GITHUB_ACTOR`와 `GITHUB_TOKEN`을 환경에 지정해 주세요.
 
 ```bash
-npm install supermemory    # or: pip install supermemory
+./scripts/test.sh          # JVM 단위 테스트 + Android lint
+./scripts/build.sh         # 서명된 .lpg, AAR, 소스 ZIP, SHA256SUMS
 ```
 
-### Quickstart
+서명 개인키는 저장소 밖에만 두고 `LOGENT_PLUGIN_SIGNING_KEY_FILE`로 지정해요. 공개키는
+`content-public-key.der.b64`와 짝이 맞아야 해요. `build/dist/`에
+`logent-supermemory-v<VERSION>.lpg`가 생겨요.
 
-```typescript
-import Supermemory from "supermemory";
-
-const client = new Supermemory();
-
-// Store a conversation
-await client.add({
-  content: "User loves TypeScript and prefers functional patterns",
-  containerTag: "user_123",
-});
-
-// Get user profile + relevant memories in one call
-const { profile, searchResults } = await client.profile({
-  containerTag: "user_123",
-  q: "What programming style does the user prefer?",
-});
-
-// profile.static  → ["Loves TypeScript", "Prefers functional patterns"]
-// profile.dynamic → ["Working on API integration"]
-// searchResults   → Relevant memories ranked by similarity
-```
-
-```python
-from supermemory import Supermemory
-
-client = Supermemory()
-
-client.add(
-    content="User loves TypeScript and prefers functional patterns",
-    container_tag="user_123"
-)
-
-result = client.profile(container_tag="user_123", q="programming style")
-
-print(result.profile.static)   # Long-term facts
-print(result.profile.dynamic)  # Recent context
-```
-
-Supermemory automatically extracts memories, builds user profiles, and returns relevant context. No embedding pipelines, no vector DB config, no chunking strategies.
-
-### Framework integrations
-
-Drop-in wrappers for every major AI framework:
-
-```typescript
-// Vercel AI SDK
-import { withSupermemory } from "@supermemory/tools/ai-sdk";
-const model = withSupermemory(openai("gpt-4o"), { containerTag: "user_123", customId: "conv-1" });
-
-// Mastra
-import { withSupermemory } from "@supermemory/tools/mastra";
-const agent = new Agent(withSupermemory(config, "user-123", { mode: "full" }));
-```
-
-**Vercel AI SDK** · **LangChain** · **LangGraph** · **OpenAI Agents SDK** · **Mastra** · **Agno** · **Claude Memory Tool** · **n8n**
-
-### Search modes
-
-```typescript
-// Hybrid (default) — RAG + Memory in one query
-const results = await client.search({
-  q: "how do I deploy?",
-  containerTag: "user_123",
-  searchMode: "hybrid",
-});
-// Returns deployment docs (RAG) + user's deploy preferences (Memory)
-
-// Memories only
-const results = await client.search({
-  q: "user preferences",
-  containerTag: "user_123",
-  searchMode: "memories",
-});
-```
-
-### User profiles
-
-Traditional memory relies on search — you need to know what to ask for. Supermemory automatically maintains a profile for every user:
-
-```typescript
-const { profile } = await client.profile({ containerTag: "user_123" });
-
-// profile.static  → ["Senior engineer at Acme", "Prefers dark mode", "Uses Vim"]
-// profile.dynamic → ["Working on auth migration", "Debugging rate limits"]
-```
-
-One call. ~50ms. Inject into your system prompt and your agent instantly knows who it's talking to.
-
-### Connectors
-
-Auto-sync external data into your knowledge base:
-
-**Google Drive** · **Gmail** · **Notion** · **OneDrive** · **GitHub** · **Web Crawler**
-
-Real-time webhooks. Documents automatically processed, chunked, and searchable.
-
-### API at a glance
-
-| Method | Purpose |
-|---|---|
-| `client.add()` | Store content — text, conversations, URLs, HTML |
-| `client.profile()` | User profile + optional search in one call |
-| `client.search()` | Hybrid search across memories and documents (`searchMode`) |
-| `client.search.documents()` | Document search with metadata filters (legacy v3 response shape) |
-| `client.documents.uploadFile()` | Upload PDFs, images, videos, code |
-| `client.documents.list()` | List and filter documents |
-| `client.settings.update()` | Configure memory extraction and chunking |
-
-Full API reference → [supermemory.ai/docs](https://supermemory.ai/docs)
-
----
-
-## Supermemory local — run it yourself
-
-State-of-the-art memory, on your machine. One binary. Zero config.
+## upstream 업데이트
 
 ```bash
-curl -fsSL https://supermemory.ai/install | bash
-# or
-npx supermemory local
+git fetch upstream
+git switch logent
+git merge upstream/main
+./scripts/test.sh
+git push origin logent
 ```
 
-```bash
-supermemory-server
-```
+합친 뒤 `UPSTREAM_COMMIT`을 갱신하고, Logent 변경이 `plugin/` 밖으로 새지 않았는지 확인해요.
 
-First boot sets up the embedded Supermemory graph engine, local embeddings, and your credentials, then prints an API key. The full Memory API — documents, memories, user profiles, hybrid search — runs against `http://localhost:6767`.
+## 라이선스
 
-```typescript
-const client = new Supermemory({
-  apiKey: "sm_...",
-  baseURL: "http://localhost:6767", // that's the only change
-});
-```
-
-- **Bring any model** — OpenAI, Anthropic, Gemini, Groq, or any OpenAI-compatible endpoint. An interactive wizard walks you through it on first boot.
-- **Embeddings** — local `Xenova/bge-base-en-v1.5` by default (no API key); optionally OpenAI, Gemini, or Ollama. Same provider stack as cloud.
-- **Offline text memories if you want** — point it at Ollama (`gpt-oss:20b` works great), disable telemetry with `SUPERMEMORY_DISABLE_TELEMETRY=1`, and use local text or file inputs after the first embedding-model download. URL ingestion uses a hosted reader service.
-- **Your data, one directory** — everything lives in `~/.supermemory`, easy to back up or move.
-- **Same API as the platform** — prototype locally, ship on the hosted platform by changing `baseURL`.
-
-### Run with Docker
-
-Prebuilt images support Linux amd64 and arm64. You don’t need to build or clone the server source.
-
-For a new installation, run these commands in an empty directory and set your own LLM provider key:
-
-```bash
-release_url=https://github.com/supermemoryai/supermemory/releases
-curl -fL "$release_url/download/server-v0.0.9/compose.yaml" -o compose.yaml
-export OPENAI_API_KEY=your_openai_api_key_here
-export SUPERMEMORY_VERSION=0.0.9
-docker compose up -d --wait --wait-timeout 180
-```
-
-The API listens on `http://localhost:6767`. Data and credentials persist in the `supermemory_supermemory-data` volume. Get your local API key with `docker compose exec supermemory cat /data/api-key`; requests require it even on localhost.
-
-Read the [Docker setup and upgrade instructions](apps/docs/self-hosting/docker.mdx) for persistent provider configuration, backups and upgrades. Keep the existing volume and keys when upgrading; **don’t run `docker compose down -v`**.
-
-Read the [self-hosting docs](https://supermemory.ai/docs/self-hosting/overview) — [quickstart](https://supermemory.ai/docs/self-hosting/quickstart), [configuration](https://supermemory.ai/docs/self-hosting/configuration), [embeddings](https://supermemory.ai/docs/self-hosting/embeddings), and [local vs. Enterprise](https://supermemory.ai/docs/self-hosting/local-vs-enterprise).
-
----
-
-## Benchmarks
-
-Supermemory is state of the art across all major AI memory benchmarks:
-
-| Benchmark | What it measures | Result |
-|---|---|---|
-| **[LongMemEval](https://github.com/xiaowu0162/LongMemEval)** | Long-term memory across sessions with knowledge updates | **#1** |
-| **[LoCoMo](https://github.com/snap-research/locomo)** | Fact recall across extended conversations (single-hop, multi-hop, temporal, adversarial) | **#1** |
-| **[ConvoMem](https://github.com/Salesforce/ConvoMem)** | Personalization and preference learning | **#1** |
-
-On LongMemEval, supermemory reaches **95% Recall@15 while adding only ~720 tokens of context — a 99.4% context reduction** (99.6% at @10, 99.8% at @5). Recall by category: Knowledge Updates 99%, Assistant recall 100%, User recall 97%, Multi-session 93%, Temporal Reasoning 91%, Preference 90%.
-
-We also built the **Supermemory Filesystem (SMFS)**, which uses **3.0× fewer tokens on Claude** (24M vs 72M) and **1.75× fewer on Codex** across the 110-question xAFS benchmark. See the full write-ups on our [research page](https://supermemory.ai/research).
-
-We also built **[MemoryBench](https://supermemory.ai/docs/memorybench/overview)** — an open-source framework for standardized, reproducible benchmarks of memory providers. Compare Supermemory, Mem0, Zep, and others head-to-head:
-
-```bash
-bun run src/index.ts run -p supermemory -b longmemeval -j gpt-4o -r my-run
-```
-
-### Benchmarking your own memory solution
-
-We provide an Agent skill for companies to benchmark their own context and memory solutions against supermemory.
-
-```
-npx skills add supermemoryai/memorybench
-```
-
-Simply run this and do `/benchmark-context` - Supermemory will automatically do the work for you!
-
----
-
-## How memory works under the hood
-
-```
-Your app / AI tool
-        ↓
-   Supermemory
-        │
-        ├── Memory Engine     Extracts facts, tracks updates, resolves contradictions,
-        │                     auto-forgets expired info
-        ├── User Profiles     Static facts + dynamic context built from engine, always fresh
-        ├── Hybrid Search     RAG + Memory in one query
-        ├── Connectors        Real-time sync from Google Drive, Gmail, Notion, GitHub...
-        └── File Processing   PDFs, images, videos, code → searchable chunks
-```
-
-**Memory is not RAG.** RAG retrieves document chunks — stateless, same results for everyone. Memory extracts and tracks *facts about users* over time. It understands that "I just moved to SF" supersedes "I live in NYC." Supermemory runs both together by default, so you get knowledge base retrieval *and* personalized context in every query. Read more about this here - https://supermemory.ai/docs/concepts/memory-vs-rag
-
-**Automatic forgetting.** Supermemory knows when memories become irrelevant. Temporary facts ("I have an exam tomorrow") expire after the date passes. Contradictions are resolved automatically. Noise never becomes permanent memory.
-
----
-
-## Links
-
-- 📖 [Documentation](https://supermemory.ai/docs)
-- 🚀 [Quickstart](https://supermemory.ai/docs/quickstart)
-- 🖥️ [Self-hosting (Supermemory local)](https://supermemory.ai/docs/self-hosting/overview)
-- 🧪 [MemoryBench](https://supermemory.ai/docs/memorybench/overview)
-- 🔌 [Integrations](https://supermemory.ai/docs/integrations)
-- 💬 [Discord](https://supermemory.link/discord)
-- 𝕏 [Twitter](https://twitter.com/supermemory)
-
----
-
-<p align="center">
-  <strong>Give your AI a memory. It's about time..</strong>
-</p>
+upstream 코드와 문서는 MIT이며 루트 [`LICENSE`](LICENSE)를 그대로 보존해요.
+`plugin/`의 Logent Kotlin 통합 코드는 GPL-3.0([`plugin/LICENSE`](plugin/LICENSE))이에요.
+원본·변경 고지는 [`NOTICE`](NOTICE)에 있어요.

@@ -1,10 +1,10 @@
-package dev.logent.supermemory
+package com.sleepysoong.logent.supermemory
 
-import dev.logent.plugin.ToolSpec
-import dev.logent.plugin.integerProperty
-import dev.logent.plugin.stringArrayProperty
-import dev.logent.plugin.stringProperty
-import dev.logent.plugin.toolSpec
+import com.sleepysoong.logent.plugin.ToolSpec
+import com.sleepysoong.logent.plugin.integerProperty
+import com.sleepysoong.logent.plugin.stringArrayProperty
+import com.sleepysoong.logent.plugin.stringProperty
+import com.sleepysoong.logent.plugin.toolSpec
 
 /**
  * `memory` 도구의 모델 계약이에요.

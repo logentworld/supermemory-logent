@@ -1,14 +1,14 @@
-package dev.logent.supermemory
+package com.sleepysoong.logent.supermemory
 
-import dev.logent.plugin.PluginHost
-import dev.logent.plugin.PluginHttpRequest
-import dev.logent.plugin.PluginHttpResponse
-import dev.logent.plugin.ProcessResult
+import com.sleepysoong.logent.plugin.PluginHost
+import com.sleepysoong.logent.plugin.PluginHttpRequest
+import com.sleepysoong.logent.plugin.PluginHttpResponse
+import com.sleepysoong.logent.plugin.ProcessResult
 
 /** 설정과 HTTPS 요청을 그대로 붙잡아 두는 테스트 호스트예요. */
 internal class FakePluginHost(
     override val appVersion: String = "0.0.0-test",
-    override val apkPath: String = "/data/app/~~abc/dev.logent-1/base.apk",
+    override val apkPath: String = "/data/app/~~abc/com.sleepysoong.logent-1/base.apk",
 ) : PluginHost {
     private val values = mutableMapOf<String, String>()
     val requests = mutableListOf<PluginHttpRequest>()

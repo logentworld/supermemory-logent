@@ -9,7 +9,7 @@ Logent의 `memory` 장기 기억 도구를 `.lpg` 플러그인으로 묶은 저�
 - 포크: `logentworld/supermemory-logent` (부모: `supermemoryai/supermemory`)
 - 원본 README 원문: [`README.upstream.md`](README.upstream.md)
 - Logent 변경 내역: [`NOTICE`](NOTICE)
-- 플러그인 id: `dev.logent.supermemory`, 도구 이름: `memory`
+- 플러그인 id: `com.sleepysoong.logent.supermemory`, 도구 이름: `memory`
 
 ## 무엇을 하나요
 
@@ -43,16 +43,16 @@ HTTPS·공용 주소·리다이렉트·시간·응답 크기를 검사해요.
 ```text
 apps/, packages/, skills/   upstream 원본 (수정하지 않아요)
 plugin/                     Logent Kotlin 플러그인 (:plugin)
-  src/main/kotlin/dev/logent/supermemory/
+  src/main/kotlin/com/sleepysoong/logent/supermemory/
     SupermemoryPlugin.kt    LogentPlugin 구현, 설정·프롬프트
     SupermemoryTool.kt      memory action 디스패치
     SupermemorySpec.kt      모델 도구 스키마
     SupermemoryClient.kt    v5 REST 요청·응답 정규화
-  src/test/kotlin/dev/logent/supermemory/
+  src/test/kotlin/com/sleepysoong/logent/supermemory/
 scripts/                    Gradle 래퍼 실행, 테스트, .lpg 패키징·서명
 ```
 
-`plugin/`은 코어 앱을 import하지 않고 `dev.logent:logent-plugin-api:3.3.0` 계약만 구현해요.
+`plugin/`은 코어 앱을 import하지 않고 `com.sleepysoong.logent:logent-plugin-api:4.0.0` 계약만 구현해요.
 API artifact와 소스 커밋은 [`plugin-api.lock`](plugin-api.lock)에 함께 고정해요.
 upstream의 설치 스크립트와 Claude 마켓플레이스 파일은 `.lpg`에 넣지 않아요.
 

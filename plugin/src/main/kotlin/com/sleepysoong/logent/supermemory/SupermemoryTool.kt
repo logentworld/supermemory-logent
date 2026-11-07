@@ -1,13 +1,13 @@
-package dev.logent.supermemory
+package com.sleepysoong.logent.supermemory
 
-import dev.logent.plugin.PluginContext
-import dev.logent.plugin.PluginHost
-import dev.logent.plugin.PluginTool
-import dev.logent.plugin.ToolAccess
-import dev.logent.plugin.ToolResult
-import dev.logent.plugin.array
-import dev.logent.plugin.integer
-import dev.logent.plugin.text
+import com.sleepysoong.logent.plugin.PluginContext
+import com.sleepysoong.logent.plugin.PluginHost
+import com.sleepysoong.logent.plugin.PluginTool
+import com.sleepysoong.logent.plugin.ToolAccess
+import com.sleepysoong.logent.plugin.ToolResult
+import com.sleepysoong.logent.plugin.array
+import com.sleepysoong.logent.plugin.integer
+import com.sleepysoong.logent.plugin.text
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -15,7 +15,7 @@ import kotlinx.serialization.json.JsonPrimitive
 /**
  * `memory` 도구예요.
  *
- * 호스트가 [PluginHost.ensureReady][dev.logent.plugin.LogentPlugin.ensureReady]로
+ * 호스트가 [PluginHost.ensureReady][com.sleepysoong.logent.plugin.LogentPlugin.ensureReady]로
  * 넘겨 준 호스트를 붙잡아 두고, 실행할 때마다 설정에서 키·네임스페이스를 다시 읽어요.
  * 그래서 설정을 바꾸면 다음 호출부터 바로 반영돼요.
  */

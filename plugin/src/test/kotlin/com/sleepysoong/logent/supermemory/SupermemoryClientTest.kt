@@ -1,7 +1,7 @@
-package dev.logent.supermemory
+package com.sleepysoong.logent.supermemory
 
-import dev.logent.plugin.PluginHttpRequest
-import dev.logent.plugin.PluginHttpResponse
+import com.sleepysoong.logent.plugin.PluginHttpRequest
+import com.sleepysoong.logent.plugin.PluginHttpResponse
 import java.io.IOException
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json

@@ -1,10 +1,10 @@
-package dev.logent.supermemory
+package com.sleepysoong.logent.supermemory
 
-import dev.logent.plugin.LogentPlugin
-import dev.logent.plugin.PluginHost
-import dev.logent.plugin.PluginSetting
-import dev.logent.plugin.PluginSettingKind
-import dev.logent.plugin.PluginTool
+import com.sleepysoong.logent.plugin.LogentPlugin
+import com.sleepysoong.logent.plugin.PluginHost
+import com.sleepysoong.logent.plugin.PluginSetting
+import com.sleepysoong.logent.plugin.PluginSettingKind
+import com.sleepysoong.logent.plugin.PluginTool
 
 /**
  * Supermemory 장기 기억 도구를 제공하는 독립 플러그인이에요.
@@ -51,7 +51,7 @@ class SupermemoryPlugin : LogentPlugin {
     }
 
     companion object {
-        const val PLUGIN_ID = "dev.logent.supermemory"
+        const val PLUGIN_ID = "com.sleepysoong.logent.supermemory"
         const val KEY_API_KEY = "api-key"
         const val KEY_NAMESPACE = "namespace"
         const val DEFAULT_NAMESPACE = "logent"

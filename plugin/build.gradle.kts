@@ -14,7 +14,7 @@ val apiPin = Properties().apply {
 }
 
 android {
-    namespace = "dev.logent.supermemory"
+    namespace = "com.sleepysoong.logent.supermemory"
     compileSdk = 37
 
     defaultConfig {

@@ -1,9 +1,9 @@
-package dev.logent.supermemory
+package com.sleepysoong.logent.supermemory
 
-import dev.logent.plugin.PluginContext
-import dev.logent.plugin.PluginHttpResponse
-import dev.logent.plugin.PluginSettingKind
-import dev.logent.plugin.ToolAccess
+import com.sleepysoong.logent.plugin.PluginContext
+import com.sleepysoong.logent.plugin.PluginHttpResponse
+import com.sleepysoong.logent.plugin.PluginSettingKind
+import com.sleepysoong.logent.plugin.ToolAccess
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonPrimitive
@@ -24,10 +24,10 @@ class SupermemoryPluginTest {
     fun `플러그인 identity와 설정 계약을 노출해요`() {
         val plugin = SupermemoryPlugin()
 
-        assertEquals("dev.logent.supermemory", plugin.id)
+        assertEquals("com.sleepysoong.logent.supermemory", plugin.id)
         assertEquals("Supermemory 기억", plugin.name)
         assertEquals(BuildConfig.PLUGIN_VERSION, plugin.version)
-        assertEquals(3, plugin.apiVersion)
+        assertEquals(4, plugin.apiVersion)
 
         val settings = plugin.settings().associateBy { it.key }
         assertEquals(2, settings.size)

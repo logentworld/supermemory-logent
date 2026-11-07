@@ -9,7 +9,7 @@ fi
 next="$1"; summary="$2"; body="$3"; shift 3
 [[ "$next" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]] || { echo "버전은 x.y.z 형식으로 써 주세요." >&2; exit 1; }
 [[ "$summary" != *$'\n'* ]] && LC_ALL=C grep -q '^[ -~]*[A-Za-z][ -~]*$' <<< "$summary" || { echo "제목은 한 줄 영어로 써 주세요." >&2; exit 1; }
-[[ "$body" =~ [가-힣] && "$body" =~ 요([.!?]|…)*[[:space:]]*$ ]] || { echo "본문은 한국어 해요체로 써 주세요." >&2; exit 1; }
+[[ "$body" =~ 요([.!?]|…)*[[:space:]]*$ ]] || { echo "본문은 한국어 해요체로 써 주세요." >&2; exit 1; }
 key="${LOGENT_PLUGIN_SIGNING_KEY_FILE:-${LOGENT_CONTENT_SIGNING_KEY_FILE:-}}"
 : "${key:?플러그인 .lpg를 서명할 Git 밖 개인 키 파일을 지정해 주세요.}"
 export LOGENT_PLUGIN_SIGNING_KEY_FILE="$key"

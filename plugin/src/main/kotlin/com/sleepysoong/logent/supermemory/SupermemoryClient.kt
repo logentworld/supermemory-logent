@@ -1,9 +1,9 @@
-package dev.logent.supermemory
+package com.sleepysoong.logent.supermemory
 
-import dev.logent.plugin.PluginHttpRequest
-import dev.logent.plugin.PluginHttpResponse
-import dev.logent.plugin.integer
-import dev.logent.plugin.text
+import com.sleepysoong.logent.plugin.PluginHttpRequest
+import com.sleepysoong.logent.plugin.PluginHttpResponse
+import com.sleepysoong.logent.plugin.integer
+import com.sleepysoong.logent.plugin.text
 import java.util.Locale
 import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.json.Json
@@ -33,7 +33,7 @@ internal fun interface SupermemoryTransport {
  * Supermemory v5 REST 클라이언트예요.
  *
  * 저장(POST /ns/{ns}/document), 회상(POST /ns/{ns}/search), 프로필(GET/POST /ns/{ns}/profile),
- * 삭제(DELETE /ns/{ns}/memories)만 다뤄요. 실제 HTTPS는 [dev.logent.plugin.PluginHost.http]가
+ * 삭제(DELETE /ns/{ns}/memories)만 다뤄요. 실제 HTTPS는 [com.sleepysoong.logent.plugin.PluginHost.http]가
  * 공용 주소·리다이렉트·시간·크기 정책을 강제하며, 이 클래스는 요청 본문과 헤더,
  * 응답 정규화만 맡아요. API 키와 본문은 로그로 남기지 않고, 오류 진단에 필요한
  * 응답 일부만 비밀을 지운 채 돌려줘요.

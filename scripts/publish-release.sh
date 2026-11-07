@@ -18,8 +18,9 @@ name="logent-supermemory"
 dist="$PWD/build/dist"
 assets=("$dist/$name-v$version.lpg" "$dist/$name-v$version.aar" "$dist/$name-v$version-source.zip" "$dist/SHA256SUMS")
 for asset in "${assets[@]}"; do [[ -s "$asset" ]] || { echo "릴리스 산출물이 없어요: $asset" >&2; exit 1; }; done
-if gh release view "$tag" >/dev/null 2>&1; then
-    gh release upload "$tag" "${assets[@]}" --clobber
+repo="$(git remote get-url origin)"
+if gh release view "$tag" --repo "$repo" >/dev/null 2>&1; then
+    gh release upload "$tag" "${assets[@]}" --repo "$repo" --clobber
 else
-    gh release create "$tag" "${assets[@]}" --verify-tag --title "$name $tag" --notes "${1:-서명된 .lpg 플러그인 패키지와 보조 AAR·소스 ZIP을 배포해요.}"
+    gh release create "$tag" "${assets[@]}" --repo "$repo" --verify-tag --title "$name $tag" --notes "${1:-서명된 .lpg 플러그인 패키지와 보조 AAR·소스 ZIP을 배포해요.}"
 fi

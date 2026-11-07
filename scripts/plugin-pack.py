@@ -71,9 +71,10 @@ def openssl(*arguments, data=None, pass_fds=()):
 
 
 def fingerprint(metadata):
+    # ctime은 chmod로도 바뀌어 동시 패키징에서 오탐이 나요.
     return (
         metadata.st_dev, metadata.st_ino, metadata.st_mode, metadata.st_size,
-        metadata.st_mtime_ns, metadata.st_ctime_ns,
+        metadata.st_mtime_ns,
     )
 
 

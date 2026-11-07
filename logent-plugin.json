@@ -1,0 +1,9 @@
+{
+  "id": "com.sleepysoong.logent.supermemory",
+  "key": "sleepysoong:supermemory",
+  "name": "Supermemory 기억",
+  "entry": "com.sleepysoong.logent.supermemory.SupermemoryPlugin",
+  "dependencies": [],
+  "apiMin": 4,
+  "apiMax": 4
+}

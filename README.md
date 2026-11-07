@@ -11,6 +11,12 @@ Logent의 `memory` 장기 기억 도구를 `.lpg` 플러그인으로 묶은 저�
 - Logent 변경 내역: [`NOTICE`](NOTICE)
 - 플러그인 id: `com.sleepysoong.logent.supermemory`, 도구 이름: `memory`
 
+`logent-plugin.json`을 `scripts/plugin-pack.py build --definition logent-plugin.json`의
+공통 정의로 사용해요. 플러그인 key는 `sleepysoong:supermemory`, `dependencies`는 `[]`예요.
+`sleepysoong`는 명시한 publisher 별칭이며 GitHub 인증 계정이나 소유권을 뜻하지 않아요.
+key와 의존성에서 생성한 manifest의 `requires`는 서명 metadata에 포함되고,
+`content-public-key.der.b64`에 고정한 공개키로 서명과 파일 해시를 검증해요.
+
 ## 무엇을 하나요
 
 Supermemory v5 REST로 장기 기억을 저장·회상하고, 네임스페이스 프로필을 읽고, id로 정확히

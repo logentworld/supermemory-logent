@@ -20,6 +20,10 @@
   `logent`)으로 옮겼어요. 키는 요청 헤더에만 쓰고 로그·프롬프트·도구 결과에서는 지워요.
 - 코어 시스템 프롬프트의 Supermemory 기억 지침을 플러그인 `promptSection`으로 옮겼어요.
 - upstream의 설치 스크립트와 Claude 마켓플레이스 파일은 Kotlin `.lpg` 패키지에 넣지 않아요.
+- `logent-plugin.json`을 공통 패키징 정의로 사용하고 `sleepysoong:supermemory` key와 빈
+  `dependencies`를 선언했어요. publisher는 GitHub 인증과 별개인 명시적 별칭이에요.
+  manifest의 key·빈 `requires`를 서명 metadata에 포함해 고정 공개키와 파일 해시로
+  검증해요. Kotlin HTTP 호출과 도구 동작은 바꾸지 않았어요.
 
 `plugin/`의 Logent Kotlin 통합 코드는 GPL-3.0(`plugin/LICENSE`)이며, upstream에서 가져온
 코드·문서는 원래 MIT 라이선스를 그대로 따릅니다. 원본 라이선스 전문은 루트 `LICENSE`에 보존했어요.

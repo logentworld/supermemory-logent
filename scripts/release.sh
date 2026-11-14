@@ -10,10 +10,7 @@ next="$1"; summary="$2"; body="$3"; shift 3
 [[ "$next" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]] || { echo "버전은 x.y.z 형식으로 써 주세요." >&2; exit 1; }
 [[ "$summary" != *$'\n'* ]] && LC_ALL=C grep -q '^[ -~]*[A-Za-z][ -~]*$' <<< "$summary" || { echo "제목은 한 줄 영어로 써 주세요." >&2; exit 1; }
 [[ "$body" =~ 요([.!?]|…)*[[:space:]]*$ ]] || { echo "본문은 한국어 해요체로 써 주세요." >&2; exit 1; }
-key="${LOGENT_PLUGIN_SIGNING_KEY_FILE:-${LOGENT_CONTENT_SIGNING_KEY_FILE:-}}"
-: "${key:?플러그인 .lpg를 서명할 Git 밖 개인 키 파일을 지정해 주세요.}"
-export LOGENT_PLUGIN_SIGNING_KEY_FILE="$key"
-for tool in git gh python3 openssl; do command -v "$tool" >/dev/null || { echo "필수 도구가 없어요: $tool" >&2; exit 1; }; done
+for tool in git gh python3; do command -v "$tool" >/dev/null || { echo "필수 도구가 없어요: $tool" >&2; exit 1; }; done
 gh auth status >/dev/null 2>&1 || { echo "먼저 gh auth login으로 인증해 주세요." >&2; exit 1; }
 branch="$(git symbolic-ref --quiet --short HEAD)"
 tag="v$next"

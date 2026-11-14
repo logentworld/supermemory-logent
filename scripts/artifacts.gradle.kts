@@ -1,55 +1,18 @@
-// 테스트·릴리스가 같은 서명 절차를 쓰도록 모듈 안에서 등록해요.
+// 테스트·릴리스가 같은 AAR로 .lpg만 만들도록 모듈 안에서 등록해요.
 val repository = projectDir.parentFile
 val releaseVersion = repository.resolve("VERSION").readText().trim()
 require(Regex("[0-9]+[.][0-9]+[.][0-9]+").matches(releaseVersion)) { "VERSION은 x.y.z 형식으로 써 주세요." }
 val distribution = repository.resolve("build/dist")
 val pluginDefinition = repository.resolve("logent-plugin.json")
-val sourceArchive = tasks.register<Zip>("pluginSourceArchive") {
-    from(repository) {
-        include(
-            "LICENSE",
-            "NOTICE",
-            "README.md",
-            "UPSTREAM_COMMIT",
-            "VERSION",
-            "logent-plugin.json",
-            "plugin-api.lock",
-            "build.gradle.kts",
-            "settings.gradle.kts",
-            "gradle.properties",
-            "plugin/build.gradle.kts",
-            "plugin/LICENSE",
-            "plugin/src/**",
-        )
-        exclude("plugin/build/**")
-    }
-    archiveFileName.set("logent-supermemory-v${releaseVersion}-source.zip")
-    destinationDirectory.set(distribution)
-    isPreserveFileTimestamps = false
-    isReproducibleFileOrder = true
-}
-val releaseAar = tasks.register<Copy>("pluginReleaseAar") {
-    dependsOn("assembleRelease")
-    from(layout.buildDirectory.file("outputs/aar/${project.name}-release.aar"))
-    into(distribution)
-    rename { "logent-supermemory-v${releaseVersion}.aar" }
-}
 val pluginPackage = tasks.register<Exec>("pluginPackage") {
     group = "distribution"
-    description = "classes.jar를 D8로 변환하고 manifest·서명과 묶어 .lpg를 만들어요."
-    dependsOn(releaseAar)
-    val aar = distribution.resolve("logent-supermemory-v${releaseVersion}.aar")
+    description = "classes.jar를 D8로 변환하고 manifest와 묶어 .lpg를 만들어요."
+    dependsOn("assembleRelease")
+    val aar = layout.buildDirectory.file("outputs/aar/${project.name}-release.aar").get().asFile
     val lpg = distribution.resolve("logent-supermemory-v${releaseVersion}.lpg")
-    val pinnedPublicKey = repository.resolve("build/keys/content-public.der")
     doFirst {
-        val key = System.getenv("LOGENT_PLUGIN_SIGNING_KEY_FILE")
-            ?: System.getenv("LOGENT_CONTENT_SIGNING_KEY_FILE")
-            ?: throw GradleException("플러그인 .lpg를 서명할 Git 밖 개인 키 파일을 LOGENT_PLUGIN_SIGNING_KEY_FILE로 지정해 주세요.")
-        val publicKey = System.getenv("LOGENT_PLUGIN_PUBLIC_KEY_FILE")
-            ?.let { file(it) }
-            ?: pinnedPublicKey
-        if (!publicKey.isFile) throw GradleException("공개키가 없어요: $publicKey")
         if (!aar.isFile) throw GradleException("AAR이 없어요: $aar")
+        distribution.mkdirs()
         commandLine(
             "python3",
             repository.resolve("scripts/plugin-pack.py").absolutePath,
@@ -57,14 +20,12 @@ val pluginPackage = tasks.register<Exec>("pluginPackage") {
             "--definition", pluginDefinition.absolutePath,
             "--aar", aar.absolutePath,
             "--version", releaseVersion,
-            "--key", file(key).absolutePath,
-            "--public-key", publicKey.absolutePath,
             "--output", lpg.absolutePath,
         )
     }
 }
 tasks.register("pluginArtifacts") {
     group = "distribution"
-    description = "서명된 .lpg와 보조 AAR·소스 ZIP을 만들어요."
-    dependsOn(pluginPackage, sourceArchive, releaseAar)
+    description = ".lpg 패키지를 만들어요."
+    dependsOn(pluginPackage)
 }

@@ -14,8 +14,7 @@ Logent의 `memory` 장기 기억 도구를 `.lpg` 플러그인으로 묶은 저�
 `logent-plugin.json`을 `scripts/plugin-pack.py build --definition logent-plugin.json`의
 공통 정의로 사용해요. 플러그인 key는 `sleepysoong:supermemory`, `dependencies`는 `[]`예요.
 `sleepysoong`는 명시한 publisher 별칭이며 GitHub 인증 계정이나 소유권을 뜻하지 않아요.
-key와 의존성에서 생성한 manifest의 `requires`는 서명 metadata에 포함되고,
-`content-public-key.der.b64`에 고정한 공개키로 서명과 파일 해시를 검증해요.
+key와 의존성에서 생성한 manifest의 `requires`가 `.lpg`에 함께 들어가요.
 
 ## 무엇을 하나요
 
@@ -55,7 +54,7 @@ plugin/                     Logent Kotlin 플러그인 (:plugin)
     SupermemorySpec.kt      모델 도구 스키마
     SupermemoryClient.kt    v5 REST 요청·응답 정규화
   src/test/kotlin/com/sleepysoong/logent/supermemory/
-scripts/                    Gradle 래퍼 실행, 테스트, .lpg 패키징·서명
+scripts/                    Gradle 래퍼 실행, 테스트, .lpg 패키징
 ```
 
 `plugin/`은 코어 앱을 import하지 않고 `com.sleepysoong.logent:logent-plugin-api:4.0.0` 계약만 구현해요.
@@ -69,12 +68,10 @@ Android SDK 37, JDK 21, Python 3.11 이상이 필요해요. API artifact는 GitH
 
 ```bash
 ./scripts/test.sh          # JVM 단위 테스트 + Android lint
-./scripts/build.sh         # 서명된 .lpg, AAR, 소스 ZIP, SHA256SUMS
+./scripts/build.sh         # .lpg 패키지
 ```
 
-서명 개인키는 저장소 밖에만 두고 `LOGENT_PLUGIN_SIGNING_KEY_FILE`로 지정해요. 공개키는
-`content-public-key.der.b64`와 짝이 맞아야 해요. `build/dist/`에
-`logent-supermemory-v<VERSION>.lpg`가 생겨요.
+`build/dist/<name>-v<version>.lpg` 하나가 생겨요.
 
 ## upstream 업데이트
 
